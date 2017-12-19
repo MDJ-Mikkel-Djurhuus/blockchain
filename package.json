@@ -1,0 +1,29 @@
+{
+  "name": "blockchain",
+  "version": "1.0.0",
+  "description": "",
+  "main": "main.js",
+  "dependencies": {
+    "crypto-js": "^3.1.9-1",
+    "express": "^4.16.2"
+  },
+  "devDependencies": {
+    "mocha": "^4.0.1"
+  },
+  "scripts": {
+    "test": "mocha"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/MDJ-Mikkel-Djurhuus/blockchain.git"
+  },
+  "keywords": [
+    "blockchain"
+  ],
+  "author": "mikkel.djurhuus@gmail.com",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/MDJ-Mikkel-Djurhuus/blockchain/issues"
+  },
+  "homepage": "https://github.com/MDJ-Mikkel-Djurhuus/blockchain#readme"
+}
