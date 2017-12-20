@@ -1,6 +1,8 @@
-# blockchain
+# Blockchain
+Blockchain is way to store data. It is basicly a linked list, where the data gets bundled together in blocks and just like in a linked list, each block links to the previous block (with cryptography).
 
 ## Block
+Represents a block of data (transactions when talking about cryptocurrency).
 
 our implementation:
 ```javascript
@@ -31,6 +33,8 @@ class Block {
 module.exports = Block;
 ```
 ## Transaction
+In this example we are implementing a simple currency blockchain, therefor the data that gets stored in the blocks are transactions. As this is just a simple implementation, we dont implement digital signing and other security meassures that you would find in "real" cryptocurrency like Bitcoin.
+
 our implementation:
 ```javascript
 class transaction {
@@ -45,6 +49,8 @@ class transaction {
 module.exports = transaction;
 ```
 ## Blockchain
+The blockchain is responsible for verifying incomming transactions/blocks and making sure that they are synchronized with the other peers.
+
 our implementation:
 ```javascript
 const Block = require('./block');
@@ -146,9 +152,15 @@ module.exports = Blockchain;
 ```
 # References
 https://www.youtube.com/watch?v=_160oMzblY8 - Blockchain 101 - A Visual Demo
+
 https://www.youtube.com/watch?v=zVqczFZr124 - Creating a blockchain with Javascript (Blockchain, part 1)
+
 https://www.youtube.com/watch?v=HneatE69814 - Implementing Proof-of-Work in Javascript (Blockchain, part 2)
+
 https://www.savjee.be/2017/07/Writing-tiny-blockchain-in-JavaScript/
+
 https://medium.com/@lhartikk/a-blockchain-in-200-lines-of-code-963cc1cc0e54
+
 https://blockgeeks.com/guides/what-is-blockchain-technology/
+
 https://hackernoon.com/a-cryptocurrency-implementation-in-less-than-1500-lines-of-code-d3812bedb25c
