@@ -13,8 +13,8 @@
   },
   "scripts": {
     "test": "mocha --watch",
-    "network": "node network.js",
-    "peer": "node peer.js"
+    "network": "node ./network/index.js",
+    "peer": "node ./peer/index.js"
   },
   "repository": {
     "type": "git",

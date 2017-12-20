@@ -43,6 +43,7 @@ class Blockchain {
     addBlock(newBlock) {
         if (this.isNewBlockValid(newBlock))
             this.chain.push(newBlock);
+        else throw "block not valid";
     }
 
     userHasAmount(user, amount) {

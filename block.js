@@ -15,13 +15,11 @@ class Block {
     }
 
     mineBlock(difficulty) {
-        // console.log("started mining block " + this.index + "...");
         while (this.hash.substring(0, difficulty) !== Array(difficulty + 1).join("0")) {
             this.nonce++;
             this.hash = this.calculateHash();
         }
-        // console.log("done mining block " + this.index + ": " + this.hash);
     }
 }
 
-module.exports.Block = Block;
+module.exports = Block;
