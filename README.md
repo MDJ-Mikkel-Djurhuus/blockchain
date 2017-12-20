@@ -87,12 +87,13 @@ class Blockchain {
 
             return newBlock;
         }
-        return false;
+        else throw "no transactions pending";
     };
 
     addTransaction(newTransaction) {
         if (newTransaction.type === "regular" && this.isTransactionValid(newTransaction))
             this.transactions.push(newTransaction);
+        else throw "transaction not valid";
     }
 
     addBlock(newBlock) {
@@ -106,10 +107,9 @@ class Blockchain {
             return Array.isArray(cur.transactions) ? acc.concat(cur.transactions) : acc.push(cur.transactions);
         }, [])
             .filter(transaction => transaction.to === user)
-            .reduce((acc, cur) => acc += cur.amount, 0)
-
-        if (userAmount >= amount) return true;
-        else return false;
+            .reduce((acc, cur) => acc += cur.amount, 0);
+            
+        userAmount >= amount ? return true: return false;
     }
 
     isTransactionValid(transaction) {
