@@ -39,6 +39,26 @@ describe('Blockchain', function () {
             assert.equal(length, testBlockChain.chain.length);
         })
     })
+    describe("Transactions", function () {
+        before(function () {
+            testBlockChain = new Blockchain();
+        })
+        it('user has amount', function () {
+            let length = testBlockChain.chain.length;
+            let res = testBlockChain.userHasAmount("djur", 10);
+            assert.equal(res, true);
+        })
+        it('user doesnt have amount', function () {
+            let length = testBlockChain.chain.length;
+            let res = testBlockChain.userHasAmount("djur", 12);
+            assert.equal(res, false);
+        })
+        it('user that doesnt exist', function () {
+            let length = testBlockChain.chain.length;
+            let res = testBlockChain.userHasAmount("abe", 1);
+            assert.equal(res, false);
+        })
+    })
 
     describe("Hackable", function () {
         before(function () {

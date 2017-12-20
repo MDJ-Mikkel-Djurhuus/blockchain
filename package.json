@@ -5,13 +5,16 @@
   "main": "main.js",
   "dependencies": {
     "crypto-js": "^3.1.9-1",
-    "express": "^4.16.2"
+    "express": "^4.16.2",
+    "node-fetch": "^1.7.3"
   },
   "devDependencies": {
     "mocha": "^4.0.1"
   },
   "scripts": {
-    "test": "mocha"
+    "test": "mocha --watch",
+    "network": "node network.js",
+    "peer": "node peer.js"
   },
   "repository": {
     "type": "git",
