@@ -1,21 +1,24 @@
-var bodyParser = require('body-parser');
+const bodyParser = require('body-parser');
 const express = require('express');
 const app = express();
-app.use(bodyParser.json()); // for parsing application/json
 const fetch = require("node-fetch");
 const Block = require('../block');
 const Blockchain = require('../blockchain');
 const Transaction = require('../transaction');
+const testData = require('../testdata');
 
 let headers = {
     'Accept': 'application/json',
     'Content-Type': 'application/json'
 };
+
 let network = process.env.network || "http://localhost:3000";
-let port = process.env.port || 8080;
+let port = process.env.port || process.argv[2] || 8080;
 
 let peers = [];
 let chain = new Blockchain();
+
+app.use(bodyParser.json()); // for parsing application/json
 
 app.use(function (req, res, next) {
     res.header("Access-Control-Allow-Origin", "*");
@@ -24,7 +27,7 @@ app.use(function (req, res, next) {
 });
 
 app.post('/peers', (req, res) => {
-    console.log("get peers..");
+    console.log("updating peers..");
     peers = req.body.filter(x => x !== "http://localhost:" + port);
     console.log("peers updated", peers)
     res.send("peers updated");
@@ -66,15 +69,30 @@ app.get('/chain', (req, res) => {
 })
 
 
-function addTransaction() {
-    broadcast("transaction", chain.generateNextBlock());
+var server = app.listen(port, () => {
+    console.log('peer on port: ' + port);
+    setTimeout(() => {
+        join().then((res) => {
+            console.log(res)
+            addTestData();
+        }).catch((res) => {
+            console.log(res)
+        });
+    }, 3000);
+});
+
+function addTestData() {
+    let testTransactions = testData["t" + parseInt(Math.random() * 4)];
+    testTransactions.forEach(transaction => {
+        addNewTransaction(transaction);
+    });
 }
 
 function mine() {
     return new Promise((resolve, reject) => {
         let newBlock = chain.generateNextBlock();
         if (newBlock) {
-            broadcast("block", newBlock);
+            newBlock(newBlock);
             resolve("new block added");
         } else {
             reject("failed adding new block")
@@ -82,57 +100,71 @@ function mine() {
     })
 }
 
-function broadcast(message, body) {
-    return Promise.all(
-        _peers.forEach(peer => {
-            return new Promise((resolve, reject) => {
-                fetch(peer + "/" + message, {
-                    method: method,
-                    headers: headers,
-                    body: JSON.stringify(body)
-                })
-                    .then(function (res) { resolve(res) })
-                    .catch(function (res) { reject(res) })
-            });
-        })
-    );
+function addNewTransaction(transaction) {
+    chain.addTransaction(transaction)
+    broadcast("transaction", transaction);
+}
+function addNewBlock(block) {
+    broadcast("block", block);
 }
 
-function getChain() {
-    fetch(network + "/join", {
-        method: "POST",
-        headers: headers,
-        body: JSON.stringify({ endpoint: "http://localhost:" + port })
-    })
-        .then(function (res) {
-            let { chain } = res;
-            if (chain.length > _chain && chain.isChainValid())
-                _chain = chain;
-        })
-        .catch(function (res) { })
+function broadcast(message, body) {
+    console.log("broadcasting a " + message);
+    let calls = peers.map(peer => sendMessage(peer + "/" + message, body))
+    return Promise.all(calls);
 }
+
+function sendMessage(url, body) {
+    return new Promise((resolve, reject) => {
+        fetch(url, {
+            method: method,
+            headers: headers,
+            body: JSON.stringify(body)
+        })
+            .then(function (res) { resolve(res) })
+            .catch(function (res) { reject(res) })
+    });
+}
+
+// function getChain() {
+//     fetch(network + "/join", {
+//         method: "POST",
+//         headers: headers,
+//         body: JSON.stringify({ endpoint: "http://localhost:" + port })
+//     })
+//         .then(function (res) {
+//             let { chain } = res;
+//             if (chain.length > _chain && chain.isChainValid())
+//                 _chain = chain;
+//         })
+//         .catch(function (res) { })
+// }
 
 function join() {
-    fetch(network + "/join", {
-        method: "POST",
-        headers: headers,
-        body: JSON.stringify({ endpoint: "http://localhost:" + 3000 })
-    })
-        .then(function (res) { })
-        .catch(function (res) { })
+    console.log("joining network..");
+    return new Promise((resolve, reject) => {
+        fetch("http://localhost:3000/join", {
+            method: "POST",
+            headers: headers,
+            body: JSON.stringify({ endpoint: "http://localhost:" + port })
+        })
+            .then(res => resolve("joined"))
+            .catch(res => reject("failed to join"))
+    });
 }
 
 function disconnect() {
-    fetch(network + "/disconnect", {
-        method: "POST",
-        headers: headers,
-        body: JSON.stringify({ endpoint: "http://localhost:" + 3000 })
-    })
-        .then(function (res) { })
-        .catch(function (res) { })
+    console.log("disconnecting..")
+    return new Promise((resolve, reject) => {
+        fetch("http://localhost:3000/disconnect", {
+            method: "POST",
+            headers: headers,
+            body: JSON.stringify({ endpoint: "http://localhost:" + port })
+        })
+            .then(res => resolve("disconnected"))
+            .catch(res => reject("failed to disconnect"))
+    });
 }
-
-var server = app.listen(8080, () => console.log('peer on port: ' + port));
 
 // this function is called when you want the server to die gracefully
 // i.e. wait for existing connections
@@ -140,8 +172,9 @@ function gracefulShutdown() {
     console.log("Received kill signal, shutting down gracefully.");
     server.close(function () {
         console.log("Closed out remaining connections.");
-        disconnect();
-        process.exit()
+        disconnect()
+            .then(res => { console.log(res); process.exit(); })
+            .catch(res => { console.log(res); process.exit(); })
     });
 
     // if after 
@@ -156,7 +189,5 @@ process.on('SIGTERM', gracefulShutdown);
 
 // listen for INT signal e.g. Ctrl-C
 process.on('SIGINT', gracefulShutdown);
-
-join();
 
 

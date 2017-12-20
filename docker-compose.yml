@@ -28,3 +28,23 @@ services:
       - 8082:8080 
     depends_on:
       - network
+  peer3:
+    build:
+      context: .
+      dockerfile: ./peer/Dockerfile
+    environment:
+      - port=8083
+    ports:
+      - 8083:8080 
+    depends_on:
+      - network
+  peer4:
+    build:
+      context: .
+      dockerfile: ./peer/Dockerfile
+    environment:
+      - port=8084
+    ports:
+      - 8084:8080 
+    depends_on:
+      - network
