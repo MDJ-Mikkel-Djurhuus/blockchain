@@ -1,5 +1,5 @@
 # Blockchain
-Blockchain is way to store data. It is basicly a linked list, where the data gets bundled together in blocks and just like in a linked list, each block links to the previous block (with cryptography).
+Blockchain is way to store data. It is basicly a linked list, where the data gets bundled together in blocks and just like in a linked list, each block links to the previous block (in this case with cryptography).
 
 ## Block
 Represents a block of data (transactions when talking about cryptocurrency).
